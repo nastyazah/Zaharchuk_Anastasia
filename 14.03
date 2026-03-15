@@ -1,0 +1,94 @@
+//First task. FizzBuzz
+class FizzBuzz {
+    constructor(limit = 100) {
+        this.limit = limit;
+    }
+
+    generate() {
+        for (let i = 1; i <= this.limit; i++) {
+            console.log(this.getResult(i));
+        }
+    }
+
+    getResult(n) {
+        if (n % 3 === 0 && n % 5 === 0) return "FizzBuzz";
+        if (n % 3 === 0) return "Fizz";
+        if (n % 5 === 0) return "Buzz";
+        return n;
+    }
+}
+
+const game = new FizzBuzz();
+game.generate();
+
+
+//Second task. Multiplication table
+class MultiplicationTable {
+    constructor(number) {
+        this.number = Number(number);
+    }
+
+    show() {
+        if (isNaN(this.number)) {
+            console.log("Будь ласка, введіть коректне число.");
+            return;
+        }
+
+        for (let i = 1; i <= 10; i++) {
+            console.log(`${this.number} x ${i} = ${this.number * i}`);
+        }
+    }
+}
+
+const n = prompt("Введіть число n:");
+const table = new MultiplicationTable(n);
+table.show();
+
+
+//Third task. Calculating the factorial
+class MathHelper {
+    static factorial(n) {
+        if (n < 0) return "Помилка: число має бути невід'ємним";
+
+        let result = 1;
+        for (let i = 1; i <= n; i++) {
+            result *= i;
+        }
+        return result;
+    }
+}
+
+const n = 5;
+console.log(`${n}! = ${MathHelper.factorial(n)}`);
+
+
+//Fourth task. Finding the max and min in array
+class ArrayAnalyzer {
+    constructor(numbers) {
+        this.numbers = numbers;
+    }
+
+    getBounds() {
+        if (!this.numbers || this.numbers.length === 0) {
+            return { max: null, min: null };
+        }
+
+        let max = this.numbers[0];
+        let min = this.numbers[0];
+
+        for (const num of this.numbers) {
+            if (num > max) {
+                max = num;
+            }
+            if (num < min) {
+                min = num;
+            }
+        }
+
+        return { max, min };
+    }
+}
+
+const data = [10, 2, 5, 28, -3, 11];
+const analyzer = new ArrayAnalyzer(data);
+console.log(analyzer.getBounds());
