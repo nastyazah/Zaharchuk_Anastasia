@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Варіант 2 — Зміна стилів</title>
+    <style>
+        *,*::before,*::after{
+            box-sizing:border-box;
+            margin:0;
+            padding:0
+        }
+        body{
+            font-family:'Manrope',sans-serif;
+            background:#f5f3ef;
+            color:#1c1c1c;
+            min-height:100vh;
+            padding:36px 20px;
+            transition:background .3s,color .3s
+        }
+        body[data-theme="dark"]{
+            background:#111;
+            color:#f0ece6
+        }
+        h1{
+            font-family:'Syne',sans-serif;
+            font-size:1.4rem;
+            font-weight:800;
+            margin-bottom:24px
+        }
+        .card{
+            background:#fff;
+            border:1px solid #e4dfd7;
+            border-radius:12px;
+            padding:28px;
+            box-shadow:0 2px 18px rgba(0,0,0,.07);
+            max-width:700px;
+            margin:0 auto 20px;
+            transition:background .3s,border-color .3s
+        }
+        body[data-theme="dark"] .card{
+            background:#1e1e1e;
+            border-color:#333
+        }
+
+        #demo{
+            font-family:'Syne',sans-serif;
+            font-size:22px;
+            line-height:1.6;
+            padding:32px;
+            text-align:center;
+            border:2px solid #e4dfd7;
+            border-radius:12px;
+            background:#fff;
+            transition:all .15s;
+            max-width:700px;
+            margin:0 auto 20px
+        }
+        body[data-theme="dark"] #demo{
+            background:#1e1e1e;
+            border-color:#333
+        }
+
+        .row{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-bottom:14px
+        }
+        label.lbl{
+            font-size:.8rem;
+            color:#999;
+            min-width:110px;
+            cursor:pointer
+        }
+        span.lbl{
+            font-size:.8rem;
+            color:#999;
+            min-width:110px
+        }
+        input[type=color]{
+            width:38px;
+            height:38px;
+            border:none;
+            border-radius:7px;
+            padding:2px;
+            cursor:pointer;
+            background:none
+        }
+        input[type=range]{
+            accent-color:#c0392b;
+            cursor:pointer;
+            flex:1;
+            min-width:100px;
+            max-width:220px
+        }
+        .rv{
+            font-size:.85rem;
+            font-weight:700;
+            color:#c0392b;
+            min-width:40px
+        }
+        .btn{
+            font-family:'Manrope',sans-serif;
+            font-weight:600;
+            font-size:.85rem;
+            padding:9px 16px;
+            border-radius:8px;
+            cursor:pointer;
+            transition:opacity .18s,background .18s;
+            border:2px solid #e4dfd7;
+            background:#f5f3ef;
+            color:#1c1c1c
+        }
+        body[data-theme="dark"] .btn{
+            background:#2a2a2a;
+            color:#f0ece6;
+            border-color:#444
+        }
+        .btn:hover{
+            border-color:#c0392b
+        }
+        .btn[data-active="true"]{
+            background:#2c3e50;
+            color:#fff;
+            border-color:#2c3e50
+        }
+        .btn-red{
+            background:#c0392b;
+            color:#fff;
+            border-color:#c0392b
+        }
+        .btn-red:hover{
+            opacity:.85
+        }
+    </style>
+</head>
+<body data-theme="light">
+<div style="max-width:700px;margin:0 auto">
+    <h1>Варіант 2 — Динамічна зміна стилю</h1>
+</div>
+
+<div id="demo">Це текстовий блок для демонстрації стилів. Змінюйте вигляд через панель керування нижче.</div>
+
+<div class="card">
+    <div class="row">
+        <label class="lbl" for="colorText">Колір тексту</label>
+        <input type="color" id="colorText" value="#1c1c1c"/>
+    </div>
+    <div class="row">
+        <label class="lbl" for="colorBg">Колір фону</label>
+        <input type="color" id="colorBg" value="#ffffff"/>
+    </div>
+    <div class="row">
+        <label class="lbl" for="fontSize">Розмір шрифту</label>
+        <input type="range" id="fontSize" min="12" max="52" value="22"/>
+        <span class="rv" id="fontSizeVal">22px</span>
+    </div>
+    <div class="row">
+        <span class="lbl">Стиль тексту</span>
+        <button class="btn" id="boldBtn" data-active="false">Жирний</button>
+        <button class="btn" id="italicBtn" data-active="false">Курсив</button>
+        <button class="btn" id="underBtn" data-active="false">Підкреслення</button>
+    </div>
+    <div class="row">
+        <button class="btn" id="toggleBtn">Сховати текст</button>
+        <button class="btn" id="themeBtn">🌙 Dark mode</button>
+        <button class="btn btn-red" id="resetBtn">Скинути стилі</button>
+    </div>
+</div>
+
+<script>
+    const demo = document.getElementById('demo');
+    const colorText = document.getElementById('colorText');
+    const colorBg = document.getElementById('colorBg');
+    const fontSize = document.getElementById('fontSize');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+    const boldBtn = document.getElementById('boldBtn');
+    const italicBtn = document.getElementById('italicBtn');
+    const underBtn = document.getElementById('underBtn');
+    const toggleBtn = document.getElementById('toggleBtn');
+    const themeBtn = document.getElementById('themeBtn');
+    const resetBtn = document.getElementById('resetBtn');
+
+    colorText.addEventListener('input', () => { demo.style.color = colorText.value; });
+    colorBg.addEventListener('input', () => { demo.style.backgroundColor = colorBg.value; });
+    fontSize.addEventListener('input', () => {
+        demo.style.fontSize = fontSize.value + 'px';
+        fontSizeVal.textContent = fontSize.value + 'px';
+    });
+
+    function toggleStyle(btn, prop, valOn, valOff) {
+        const isActive = btn.dataset.active === 'true';
+        btn.dataset.active = isActive ? 'false' : 'true';
+        demo.style[prop] = isActive ? valOff : valOn;
+    }
+
+    boldBtn.addEventListener('click', () => toggleStyle(boldBtn,   'fontWeight',     'bold',      'normal'));
+    italicBtn.addEventListener('click', () => toggleStyle(italicBtn, 'fontStyle',      'italic',    'normal'));
+    underBtn.addEventListener('click', () => toggleStyle(underBtn,  'textDecoration', 'underline', 'none'));
+
+    toggleBtn.addEventListener('click', () => {
+        const hidden = demo.style.display === 'none';
+        demo.style.display = hidden ? '' : 'none';
+        toggleBtn.textContent = hidden ? 'Сховати текст' : 'Показати текст';
+    });
+
+    themeBtn.addEventListener('click', () => {
+        const isDark = document.body.dataset.theme === 'dark';
+        document.body.dataset.theme = isDark ? 'light' : 'dark';
+        themeBtn.textContent = isDark ? '🌙 Dark mode' : '☀️ Light mode';
+    });
+
+    resetBtn.addEventListener('click', () => {
+        demo.style.cssText = '';
+        colorText.value = '#1c1c1c';
+        colorBg.value = '#ffffff';
+        fontSize.value = '22';
+        fontSizeVal.textContent = '22px';
+        [boldBtn, italicBtn, underBtn].forEach(b => { b.dataset.active = 'false'; });
+        toggleBtn.textContent = 'Сховати текст';
+        document.body.dataset.theme = 'light';
+        themeBtn.textContent = '🌙 Dark mode';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Варіант 3 — Таймер</title>
+    <style>
+        *,*::before,*::after{
+            box-sizing:border-box;
+            margin:0;
+            padding:0
+        }
+        body{
+            font-family:'Manrope',sans-serif;
+            background:#f5f3ef;
+            color:#1c1c1c;
+            min-height:100vh;
+            padding:36px 20px;
+            display:flex;
+            flex-direction:column;
+            align-items:center
+        }
+        h1{
+            font-family:'Syne',sans-serif;
+            font-size:1.4rem;
+            font-weight:800;
+            margin-bottom:24px;
+            align-self:flex-start;
+            max-width:480px;
+            width:100%
+        }
+        .card{
+            background:#fff;
+            border:1px solid #e4dfd7;
+            border-radius:12px;
+            padding:36px 32px;
+            box-shadow:0 2px 18px rgba(0,0,0,.07);
+            width:100%;
+            max-width:480px;
+            display:flex;
+            flex-direction:column;
+            gap:20px
+        }
+
+        .input-row{
+            display:flex;
+            gap:10px;
+            align-items:center
+        }
+        label.input-label{
+            font-size:.8rem;
+            color:#999
+        }
+        input[type=number]{
+            font-family:'Manrope',sans-serif;
+            font-size:.9rem;
+            padding:9px 14px;
+            border:2px solid #e4dfd7;
+            border-radius:8px;
+            background:#f5f3ef;
+            color:#1c1c1c;
+            outline:none;
+            transition:border-color .2s;
+            width:160px
+        }
+        input[type=number]:focus{
+            border-color:#c0392b
+        }
+        .step-btn{
+            width:36px;
+            height:36px;
+            border-radius:8px;
+            border:2px solid #e4dfd7;
+            background:#f5f3ef;
+            font-size:1.2rem;
+            cursor:pointer;
+            transition:border-color .2s;
+            line-height:1
+        }
+        .step-btn:hover{
+            border-color:#c0392b
+        }
+        .step-hint{
+            font-size:.75rem;
+            color:#aaa
+        }
+
+        #display{
+            font-family:'Syne',sans-serif;
+            font-size:4.5rem;
+            font-weight:800;
+            text-align:center;
+            letter-spacing:-.02em;
+            color:#c0392b;
+            transition:color .4s;
+            line-height:1
+        }
+        #display[data-done="true"]{
+            color:#27ae60
+        }
+        #display[data-low="true"]{
+            color:#e67e22
+        }
+
+        #msg{
+            text-align:center;
+            font-weight:600;
+            font-size:.9rem;
+            color:#27ae60;
+            min-height:20px
+        }
+
+        .button-group{
+            display:flex;
+            gap:10px;
+            flex-wrap:wrap
+        }
+        .btn{
+            font-family:'Manrope',sans-serif;
+            font-weight:600;
+            font-size:.85rem;
+            padding:10px 18px;
+            border-radius:8px;
+            cursor:pointer;
+            transition:opacity .18s,background .18s;
+            border:2px solid #e4dfd7;
+            background:#f5f3ef;
+            color:#1c1c1c
+        }
+        .btn:hover{
+            border-color:#c0392b
+        }
+        .btn-red{
+            background:#c0392b;
+            color:#fff;
+            border-color:#c0392b
+        }
+        .btn-red:hover{
+            opacity:.85
+        }
+        .btn:disabled{
+            opacity:.4;
+            cursor:not-allowed
+        }
+    </style>
+</head>
+<body>
+<h1>Варіант 3 — Таймер </h1>
+<div class="card">
+    <div class="input-row">
+        <label class="input-label" for="timeInput">
+            <input type="number" id="timeInput" placeholder="Секунди" min="1"/>
+        </label>
+        <button class="step-btn" id="minusBtn" title="−10 сек">−</button>
+        <button class="step-btn" id="plusBtn"  title="+10 сек">+</button>
+        <span class="step-hint">±10 сек</span>
+    </div>
+
+    <div id="display" data-done="false" data-low="false">00:00</div>
+    <div id="msg"></div>
+
+    <div class="button-group">
+        <button class="btn btn-red" id="startBtn">Старт</button>
+        <button class="btn" id="pauseBtn" disabled>Пауза</button>
+        <button class="btn" id="resetBtn">Скинути</button>
+    </div>
+</div>
+
+<script>
+    const display = document.getElementById('display');
+    const msg = document.getElementById('msg');
+    const timeInput = document.getElementById('timeInput');
+    const startBtn = document.getElementById('startBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const plusBtn = document.getElementById('plusBtn');
+    const minusBtn = document.getElementById('minusBtn');
+
+    let remaining = 0;
+    let interval = null;
+    let running = false;
+
+    function format(sec) {
+        const m = String(Math.floor(sec / 60)).padStart(2, '0');
+        const s = String(sec % 60).padStart(2, '0');
+        return `${m}:${s}`;
+    }
+
+    function render() {
+        display.textContent = format(remaining);
+        display.dataset.low  = String(remaining > 0 && remaining <= 10);
+        display.dataset.done = String(remaining === 0 && !running && interval === null);
+    }
+
+    function start() {
+        if (running) return;
+        if (remaining === 0) {
+            const val = parseInt(timeInput.value);
+            if (!val || val <= 0) { timeInput.focus(); return; }
+            remaining = val;
+        }
+        msg.textContent = '';
+        display.dataset.done = 'false';
+        running = true;
+        startBtn.disabled = true;
+        pauseBtn.disabled = false;
+
+        interval = setInterval(() => {
+            remaining--;
+            render();
+            if (remaining <= 0) {
+                clearInterval(interval);
+                interval = null;
+                running  = false;
+                startBtn.disabled = false;
+                pauseBtn.disabled = true;
+                msg.textContent = '✅ Час вийшов!';
+            }
+        }, 1000);
+        render();
+    }
+
+    function pause() {
+        if (running) {
+            clearInterval(interval);
+            interval = null;
+            running  = false;
+            pauseBtn.textContent = 'Продовжити';
+            startBtn.disabled = false;
+        } else if (remaining > 0) {
+            pauseBtn.textContent = 'Пауза';
+            start();
+        }
+    }
+
+    function reset() {
+        clearInterval(interval);
+        interval  = null;
+        running   = false;
+        remaining = 0;
+        display.textContent  = '00:00';
+        display.dataset.done = 'false';
+        display.dataset.low  = 'false';
+        msg.textContent = '';
+        timeInput.value = '';
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        pauseBtn.textContent = 'Пауза';
+    }
+
+    startBtn.addEventListener('click', start);
+    pauseBtn.addEventListener('click', pause);
+    resetBtn.addEventListener('click', reset);
+
+    plusBtn.addEventListener('click', () => {
+        remaining += 10;
+        msg.textContent = '';
+        display.dataset.done = 'false';
+        render();
+    });
+
+    minusBtn.addEventListener('click', () => {
+        remaining = Math.max(0, remaining - 10);
+        render();
+    });
+
+    timeInput.addEventListener('keydown', e => { if (e.key === 'Enter') start(); });
+</script>
+</body>
+</html>
